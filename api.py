@@ -6,7 +6,7 @@ load_dotenv()
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Chroma
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_huggingface import HuggingFaceEndpointEmbeddings
 from langchain_groq import ChatGroq
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.prompts import ChatPromptTemplate
@@ -16,7 +16,11 @@ import os
 app = FastAPI()
 
 # ── BUILD OR LOAD VECTORSTORE ─────────────────────────
-embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+
+embeddings = HuggingFaceEndpointEmbeddings(
+    model="sentence-transformers/all-MiniLM-L6-v2",
+    huggingfacehub_api_token=os.getenv("HUGGINGFACEHUB_API_TOKEN")
+)
 CHROMA_PATH = "phase4/chroma_db"
 
 if not os.path.exists(CHROMA_PATH):
