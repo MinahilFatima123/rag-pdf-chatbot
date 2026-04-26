@@ -11,18 +11,16 @@ from langchain_core.output_parsers import StrOutputParser
 
 load_dotenv()
 
-# ── 1. LOAD ──────────────────────────────────────────
+
 loader = PyPDFLoader(r"my_file.pdf")
 docs = loader.load()
 print(f"Loaded: {len(docs)} pages")
 
-# ── 2. CHUNK ─────────────────────────────────────────
 splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
 chunks = splitter.split_documents(docs)
 print(f"Chunks: {len(chunks)}")
 
-# ── 3. EMBED + 4. STORE ───────────────────────────────
-embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")  # free, runs locally
+embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2") 
 
 vectorstore = Chroma.from_documents(
     documents=chunks,
@@ -31,7 +29,7 @@ vectorstore = Chroma.from_documents(
 )
 print("Stored in ChromaDB!")
 
-# ── 5. RETRIEVE ───────────────────────────────────────
+
 retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
 
 query = "What is market segmentation?"
@@ -43,7 +41,7 @@ for i, chunk in enumerate(retrieved_chunks):
     print(chunk.page_content)
     
 
-# ── 6. ANSWER ─────────────────────────────────────────
+
 llm = ChatGroq(model="llama-3.1-8b-instant")
 
 prompt = ChatPromptTemplate.from_template("""
